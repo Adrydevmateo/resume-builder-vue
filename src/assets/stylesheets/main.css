@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+:root {
+  --ebony-clay: #222835;
+  --ebony-clay-brighter: #242938;
+
+  --reddish-orange: #f2511b;
+  --reddish-orange-muted: rgba(242, 81, 27, 0.6);
+  --reddish-orange-brighter: #f06739;
+
+  --pattens-blue: #e5f3ff;
+  --pattens-blue-muted: rgba(229, 243, 255, 0.8);
+
+  --bright-grey: #3c4350;
+
+  --black: rgba(0, 0, 0, 0.4);
+
+  --color-primary: var(--ebony-clay);
+  --color-primary-brighter: var(--ebony-clay-brighter);
+
+  --color-secondary: var(--pattens-blue);
+  --color-secondary-muted: var(--pattens-blue-muted);
+
+  --color-accent: var(--reddish-orange);
+  --color-accent-muted: var(--reddish-orange-muted);
+  --color-accent-brighter: var(--reddish-orange-brighter);
+
+  --color-neutral: var(--bright-grey);
+
+  --font-small: 14px;
+  --font-base: 16px;
+  --font-big: 30px;
+  --font-bigger: 40px;
+
+  --opacity-primary: 0.8;
+  --opacity-secondary: 0.5;
+  --opacity-tertiary: 0.7;
+  --opacity-quaternary: 0.6;
+
+  --font-weight-medium: 500;
+  --font-weight-semi-bold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
+
+  --drop-shadow: drop-shadow(0 0 0.14rem var(--black));
+  --box-shadow: 0 3px 4px var(--black);
+
+  --font-family: "Inter", system-ui, sans-serif;
+
+  --transition-primary: 0.3s ease;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+html,
+button,
+a,
+input,
+textarea {
+  font-family: var(--font-family);
+  font-optical-sizing: auto;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-base);
+  color: var(--color-secondary);
+  text-wrap: pretty;
+  word-break: break-all;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-primary);
+}
+
+a {
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Components */
+.page-title {
+  font-size: var(--font-bigger);
+  font-weight: bold;
+}
+
+.section-title {
+  font-size: var(--font-big);
+}
+
+@media (min-width: 450px) {
+  html,
+  button,
+  a,
+  input {
+    word-break: initial;
+  }
+}
