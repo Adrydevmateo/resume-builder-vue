@@ -1,16 +1,97 @@
 <script setup lang="ts">
-const handleSubmit = (e: Event) => {
+const { userAction } = defineProps<{
+  userAction: 'sign-in' | 'sign-up'
+}>();
+
+const handleSubmit = async (e: Event) => {
+  //start loading visuals
+
   const form = e.target as HTMLFormElement
   const formData = new FormData(form)
   const honey = formData.get('_honey')
 
   if (honey) throw new Error('Bot detected!')
 
-  const email = formData.get('email')
-  const message = formData.get('message')
+  const username = formData.get('username') as string
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
 
-  form.reset()
 
+  const result = userAction === 'sign-in' ? await signIn(email, password) : await signUp(username, email, password)
+
+  if (result.success) {
+    //stop waiting visuals
+    form.reset()
+  } else {
+    //bad result action
+  }
+}
+
+type UserActionResult = {
+  success: boolean,
+  data?: any
+  status?: number,
+  msg?: string
+}
+
+const signIn = async (email: string, password: string): Promise<UserActionResult> => {
+  if (!email) return { success: false, msg: 'Email was not provided' }
+  if (!password) return { success: false, msg: 'Password was not provided' }
+
+  try {
+    const url = import.meta.env.VITE_SIGN_IN_URL
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    })
+
+    if (!res.ok) return { success: false, status: res.status }
+
+    const data = await res.json()
+
+    return { success: true, data }
+
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
+const signUp = async (username: string, email: string, password: string): Promise<UserActionResult> => {
+  if (!username) return { success: false, msg: 'Username was not provided' }
+  if (!email) return { success: false, msg: 'Email was not provided' }
+  if (!password) return { success: false, msg: 'Password was not provided' }
+
+  try {
+    const url = import.meta.env.VITE_SIGN_UP_URL
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        password
+      })
+    })
+
+    if (!res.ok) return { success: false, status: res.status }
+
+    const data = await res.json()
+
+    return { success: true, data }
+
+  } catch (error: any) {
+    throw new Error(error)
+  }
 }
 </script>
 
@@ -18,12 +99,14 @@ const handleSubmit = (e: Event) => {
   <form class="contact-form" netlify @submit.prevent="handleSubmit">
     <div class="contact-form__content">
       <input type="text" name="_honey" style="display:none">
+      <input class="form__field" type="text" name="username" placeholder="Username" autocomplete="off"
+        v-if="userAction === 'sign-up'">
       <input class="form__field" type="email" name="email" placeholder="Email" autocomplete="off">
       <input class="form__field" type="password" name="password" placeholder="Password" autocomplete="off">
     </div>
     <div class="action__wrapper">
-      <RouterLink class="form__link" to="/">Sign up</RouterLink>
-      <button class="submit__btn" type="submit">Sign in</button>
+      <RouterLink class="form__link" to="/">{{ userAction === 'sign-in' ? 'Sign up' : 'Sign in' }}</RouterLink>
+      <button class="submit__btn" type="submit">{{ userAction === 'sign-in' ? 'Sign in' : 'Sign up' }}</button>
     </div>
   </form>
 </template>
