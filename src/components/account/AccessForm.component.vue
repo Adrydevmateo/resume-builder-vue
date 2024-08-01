@@ -3,28 +3,43 @@ const { userAction } = defineProps<{
   userAction: 'sign-in' | 'sign-up'
 }>();
 
-const handleSubmit = async (e: Event) => {
-  //start loading visuals
+defineEmits(['userActionChanged']);
 
+const handleSubmit = async (e: Event) => {
   const form = e.target as HTMLFormElement
+
+  setWaiting(form, 'start')
+
   const formData = new FormData(form)
   const honey = formData.get('_honey')
 
   if (honey) throw new Error('Bot detected!')
 
-  const username = formData.get('username') as string
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  const username = form.querySelector('#username') as HTMLInputElement
+  const email = form.querySelector('#email') as HTMLInputElement
+  const password = form.querySelector('#password') as HTMLInputElement
 
+  const result = userAction === 'sign-in' ? await signIn(email.value, password.value) : await signUp(username.value, email.value, password.value)
 
-  const result = userAction === 'sign-in' ? await signIn(email, password) : await signUp(username, email, password)
-
-  if (result.success) {
-    //stop waiting visuals
-    form.reset()
-  } else {
-    //bad result action
+  if (!result.success && result.msg) {
+    if (result.msg.toLowerCase().includes('username')) setInvalidField(username)
+    if (result.msg.toLowerCase().includes('email')) setInvalidField(email)
+    if (result.msg.toLowerCase().includes('password')) setInvalidField(password)
   }
+
+  if (result.success) form.reset()
+
+  setWaiting(form, 'stop')
+}
+
+const setInvalidField = (field: HTMLInputElement) => {
+  if (!field.value) field.classList.add('invalid')
+  else field.classList.remove('invalid')
+}
+
+const setWaiting = (form: HTMLFormElement, action: 'start' | 'stop') => {
+  if (action === 'start') form.classList.add('waiting')
+  else form.classList.remove('waiting')
 }
 
 type UserActionResult = {
@@ -93,20 +108,44 @@ const signUp = async (username: string, email: string, password: string): Promis
     throw new Error(error)
   }
 }
+
 </script>
 
 <template>
   <form class="contact-form" netlify @submit.prevent="handleSubmit">
     <div class="contact-form__content">
       <input type="text" name="_honey" style="display:none">
-      <input class="form__field" type="text" name="username" placeholder="Username" autocomplete="off"
-        v-if="userAction === 'sign-up'">
-      <input class="form__field" type="email" name="email" placeholder="Email" autocomplete="off">
-      <input class="form__field" type="password" name="password" placeholder="Password" autocomplete="off">
+      <input class="form__field" type="text" name="username" id="username" placeholder="Username" autocomplete="off"
+        v-if="userAction === 'sign-up'" @input="(e) => setInvalidField(e.target as HTMLInputElement)">
+      <input class="form__field" type="email" name="email" id="email" placeholder="Email" autocomplete="off"
+        @input="(e) => setInvalidField(e.target as HTMLInputElement)">
+      <input class="form__field" type="password" name="password" id="password" placeholder="Password" autocomplete="off"
+        @input="(e) => setInvalidField(e.target as HTMLInputElement)">
     </div>
     <div class="action__wrapper">
-      <RouterLink class="form__link" to="/">{{ userAction === 'sign-in' ? 'Sign up' : 'Sign in' }}</RouterLink>
-      <button class="submit__btn" type="submit">{{ userAction === 'sign-in' ? 'Sign in' : 'Sign up' }}</button>
+      <button class="form__link" type="button"
+        @click="$emit('userActionChanged', userAction === 'sign-in' ? 'sign-up' : 'sign-in')">
+        {{ userAction === 'sign-in' ? 'Sign up' : 'Sign in' }}
+      </button>
+      <button class="submit__btn" type="submit">
+        <span>
+          {{ userAction === 'sign-in' ? 'Sign in' : 'Sign up' }}
+        </span>
+        <svg class="loading-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+          <circle cx="4" cy="12" r="3" fill="currentColor">
+            <animate id="svgSpinners3DotsFade0" fill="freeze" attributeName="opacity"
+              begin="0;svgSpinners3DotsFade1.end-0.25s" dur="0.75s" values="1;.2" />
+          </circle>
+          <circle cx="12" cy="12" r="3" fill="currentColor" opacity=".4">
+            <animate fill="freeze" attributeName="opacity" begin="svgSpinners3DotsFade0.begin+0.15s" dur="0.75s"
+              values="1;.2" />
+          </circle>
+          <circle cx="20" cy="12" r="3" fill="currentColor" opacity=".3">
+            <animate id="svgSpinners3DotsFade1" fill="freeze" attributeName="opacity"
+              begin="svgSpinners3DotsFade0.begin+0.3s" dur="0.75s" values="1;.2" />
+          </circle>
+        </svg>
+      </button>
     </div>
   </form>
 </template>
@@ -125,6 +164,16 @@ const signUp = async (username: string, email: string, password: string): Promis
   gap: 10px;
 }
 
+.form__field {
+  border: none;
+  outline: none;
+  padding-inline: 16px;
+  background-color: var(--color-primary);
+  box-shadow: var(--box-shadow);
+  min-width: 0;
+  height: 40px;
+}
+
 .form__field,
 .form__field::placeholder {
   font-weight: var(--font-weight-extra-bold);
@@ -137,17 +186,8 @@ const signUp = async (username: string, email: string, password: string): Promis
   color: var(--color-secondary);
 }
 
-.form__field {
-  border: none;
-  outline: none;
-  padding-inline: 16px;
-  background-color: var(--color-primary);
-  box-shadow: var(--box-shadow);
-  min-width: 0;
-}
-
-.form__field {
-  height: 40px;
+.form__field.invalid {
+  background: red;
 }
 
 .action__wrapper {
@@ -158,6 +198,11 @@ const signUp = async (username: string, email: string, password: string): Promis
   padding-left: 14px;
 }
 
+.form__link {
+  background: transparent;
+  border: none;
+}
+
 .submit__btn {
   background-color: var(--color-accent);
   padding: 10px 20px;
@@ -166,6 +211,25 @@ const signUp = async (username: string, email: string, password: string): Promis
   cursor: pointer;
   font-weight: var(--font-weight-bold);
   color: var(--color-secondary);
+}
+
+.loading-icon {
+  width: 0;
+  height: 0;
+}
+
+.contact-form.waiting .submit__btn {
+  pointer-events: none;
+  opacity: 1;
+}
+
+.contact-form.waiting .submit__btn span {
+  display: none;
+}
+
+.contact-form.waiting .loading-icon {
+  width: initial;
+  height: initial;
 }
 
 .form__link {

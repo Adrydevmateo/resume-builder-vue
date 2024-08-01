@@ -91,8 +91,16 @@ a {
   text-decoration: none;
 }
 
+button {
+  cursor: pointer;
+}
+
 img {
   max-width: 100%;
+}
+
+svg {
+  display: grid;
 }
 
 /* Components */
@@ -106,6 +114,7 @@ img {
 }
 
 @media (min-width: 450px) {
+
   html,
   button,
   a,
