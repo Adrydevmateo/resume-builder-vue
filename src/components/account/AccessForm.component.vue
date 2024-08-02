@@ -198,11 +198,6 @@ const signUp = async (username: string, email: string, password: string): Promis
   padding-left: 14px;
 }
 
-.form__link {
-  background: transparent;
-  border: none;
-}
-
 .submit__btn {
   background-color: var(--color-accent);
   padding: 10px 20px;
