@@ -6,6 +6,7 @@ import ViewerComponent from '@/components/viewer/Viewer.component.vue';
 <template>
   <div id="resume-view">
     <BuilderComponent />
+    <br>
     <ViewerComponent />
   </div>
 </template>

@@ -1,18 +1,21 @@
 <script setup lang="ts">
-defineProps<{
+const { id } = defineProps<{
+  id: number,
   title: string,
   description: string
 }>()
 
-const collapse = (e: MouseEvent) => {
-  const target = e.target as HTMLElement
-  if (target.classList.contains('collapse-component')) target.classList.toggle('active')
+const componentId = "collapse-component-" + id
+
+const collapse = () => {
+  const collapseComponent = document.getElementById(componentId) as HTMLElement
+  collapseComponent?.classList.toggle('active')
 }
 </script>
 
 <template>
-  <div class="collapse-component" @click="collapse">
-    <div class="head">
+  <div :id="componentId" class="collapse-component">
+    <div class="head collapse-component__head" @click="collapse">
       <div class="head__content">
         <p class="title">{{ title }}</p>
         <p class="description">{{ description }}</p>
@@ -29,19 +32,15 @@ const collapse = (e: MouseEvent) => {
 
 <style scoped>
 .collapse-component {
-  padding: 10px;
+  box-shadow: var(--box-shadow);
 }
 
 .head {
   cursor: pointer;
-  pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.active .head {
-  margin-bottom: 16px;
+  padding: 10px;
 }
 
 .head__content>* {
@@ -82,6 +81,7 @@ const collapse = (e: MouseEvent) => {
   pointer-events: initial;
   opacity: 1;
   height: auto;
+  padding: 10px;
 }
 
 
