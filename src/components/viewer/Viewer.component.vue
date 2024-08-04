@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useResumeStore } from '@/stores/resume.store';
 
+const resumeStore = useResumeStore()
 </script>
 
 <template>
   <div class="viewer">
-    Viewer
+
   </div>
 </template>
 
