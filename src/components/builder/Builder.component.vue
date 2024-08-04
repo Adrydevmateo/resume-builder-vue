@@ -27,12 +27,10 @@ const resizeTextArea = (textarea: HTMLTextAreaElement) => {
 }
 
 onMounted(() => {
-  setTimeout(() => {
-    const listOfTextareas = document.querySelectorAll("textarea")
-    for (const textarea of listOfTextareas) {
-      if (textarea.value) resizeTextArea(textarea)
-    }
-  }, 500)
+  const listOfTextareas = document.querySelectorAll("textarea")
+  for (const textarea of listOfTextareas) {
+    if (textarea.value) resizeTextArea(textarea)
+  }
 })
 
 </script>
@@ -44,17 +42,21 @@ onMounted(() => {
       <form @submit.prevent="handleSubmit">
         <input type="text" name="_honey" style="display: none;">
         <div class="form__content">
-          <input type="text" name="name" id="name" placeholder="Name" minlength="3" autocomplete="off"
+          <input type="text" name="name" placeholder="Name" minlength="3" autocomplete="off"
             v-model="resumeStore.introduction.name" required>
-          <input type="text" name="title" id="title" placeholder="Title - Ex: Software Developer" autocomplete="off"
+          <input type="text" name="lastName" placeholder="Last Name" minlength="3" autocomplete="off"
+            v-model="resumeStore.introduction.lastName" required>
+          <input type="text" name="title" placeholder="Title - Ex: Software Developer" autocomplete="off"
             v-model="resumeStore.introduction.title" required>
-          <input type="email" name="email" id="email" placeholder="Email" autocomplete="off"
+          <input type="text" name="website" placeholder="Website" autocomplete="off"
+            v-model="resumeStore.introduction.website" required>
+          <input type="email" name="email" placeholder="Email" autocomplete="off"
             v-model="resumeStore.introduction.email" required>
-          <input type="tel" name="phone" id="phone" placeholder="Phone number" autocomplete="off"
+          <input type="tel" name="phone" placeholder="Phone number" autocomplete="off"
             v-model="resumeStore.introduction.phone">
-          <input type="text" name="address" id="address" placeholder="city, state or province" autocomplete="off"
-            v-model="resumeStore.introduction.address">
-          <input type="text" name="country" id="country" placeholder="Country" autocomplete="off"
+          <input type="text" name="city" placeholder="city, state or province" autocomplete="off"
+            v-model="resumeStore.introduction.city">
+          <input type="text" name="country" placeholder="Country" autocomplete="off"
             v-model="resumeStore.introduction.country">
         </div>
         <br>
@@ -71,7 +73,7 @@ onMounted(() => {
       <form @submit.prevent="handleSubmit">
         <input type="text" name="_honey" style="display: none;">
         <div class="form__content">
-          <textarea name="skills" id="skills" placeholder="I possess a comprehensive skill-set in ..." minlength="3"
+          <textarea name="skills" placeholder="I possess a comprehensive skill-set in ..." minlength="3"
             v-model="resumeStore.skills"
             @input="({ target }) => resizeTextArea(target as HTMLTextAreaElement)"></textarea>
         </div>
@@ -99,8 +101,7 @@ onMounted(() => {
             <input type="date" name="startDate" v-model="experience.startDate">
             <input type="date" name="endDate" v-model="experience.endDate">
             <input type="text" name="address" placeholder="Address" autocomplete="off" v-model="experience.address">
-            <textarea name="experience" id="experience" placeholder="My experience .." minlength="3"
-              v-model="experience.experience"
+            <textarea name="experience" placeholder="My experience .." minlength="3" v-model="experience.experience"
               @input="({ target }) => resizeTextArea(target as HTMLTextAreaElement)"></textarea>
           </div>
           <br>
