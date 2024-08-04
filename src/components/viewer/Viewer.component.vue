@@ -53,10 +53,10 @@ const resumeStore = useResumeStore()
       <div class="col-2">
         <ol>
           <li v-for="experience, index in resumeStore.experiences" :key="index">
-            <strong>{{experience.employer}}</strong> / <span>{{experience.position}}</span>
-            <p class="item-address">{{experience.address}}</p>
+            <strong>{{ experience.employer }}</strong> / <span>{{ experience.position }}</span>
+            <p class="item-address">{{ experience.address }}</p>
             <p>
-              {{experience.experience}}
+              {{ experience.experience }}
             </p>
           </li>
         </ol>
@@ -71,8 +71,8 @@ const resumeStore = useResumeStore()
       <div class="col-2">
         <ol>
           <li v-for="education, index in resumeStore.educationList" :key="index">
-            <strong>{{education.institution}}</strong> / <span>{{education.education}}</span>
-            <p class="item-address">{{education.location}}</p>
+            <strong>{{ education.institution }}</strong> / <span>{{ education.education }}</span>
+            <p class="item-address">{{ education.location }}</p>
           </li>
         </ol>
       </div>
@@ -87,10 +87,12 @@ const resumeStore = useResumeStore()
 }
 
 .viewer {
-  padding: 20px;
+  max-width: 800px;
+  padding: 54px 40px 0;
   color: var(--ebony-clay);
   background-color: white;
-  word-break: break-all;
+  word-break: break-word;
+  margin-inline: auto;
 }
 
 a {
@@ -114,8 +116,8 @@ li:not(:last-child) {
   margin-bottom: 20px;
 }
 
-li > strong,
-li > span {
+li>strong,
+li>span {
   font-size: calc(var(--font-base) + 2px);
 }
 
@@ -168,11 +170,6 @@ li strong {
   .viewer__section {
     gap: 30px;
     grid-template-columns: 220px 1fr;
-  }
-
-  strong {
-    word-break: initial;
-    word-wrap: break-word;
   }
 }
 
