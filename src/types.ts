@@ -1,4 +1,4 @@
-export enum ESessionStorage {
+export enum EStorage {
   CURRENT_RESUME_ID = "current-resume-id",
   RESUME_INTRODUCTION = "current-resume-introduction",
   RESUME_SKILLS = "current-resume-skills",

@@ -1,7 +1,7 @@
 import { ref, reactive } from "vue";
 import { defineStore } from "pinia";
 import {
-  ESessionStorage,
+  EStorage,
   type TEducation,
   type TExperience,
   type TIntroduction,
@@ -21,12 +21,12 @@ export const useResumeStore = defineStore("resume", () => {
 
   function saveIntroduction(introduction: TIntroduction) {
     console.log("Introduction: ", introduction);
-    sessionStorage[ESessionStorage.RESUME_INTRODUCTION] =
-      JSON.stringify(introduction);
+    localStorage[EStorage.RESUME_INTRODUCTION] = JSON.stringify(introduction);
   }
 
   function loadIntroduction(): void {
-    const res = getData<TIntroduction>(ESessionStorage.RESUME_INTRODUCTION);
+    const res = getData<TIntroduction>(EStorage.RESUME_INTRODUCTION);
+    if (!res) return;
     introduction.name = res.name;
     introduction.lastName = res.lastName;
     introduction.title = res.title;
@@ -37,42 +37,20 @@ export const useResumeStore = defineStore("resume", () => {
     introduction.country = res.country;
   }
 
-  const skills = ref(
-    "I possess a comprehensive skill-set in Front-End Development, including proficiency in HTML, CSS, and JavaScript. Leverage CSS preprocessors (Sass) to write clean, maintainable, and scalable stylesheets. Adept at building responsive layouts that ensure optimal user experience across all devices and screen sizes. Utilize modern JavaScript frameworks such as Vue.js to construct performant and interactive single-page applications. Furthermore, proficient in testing technologies (Cypress, Vitest) to guarantee code quality and reliability. Employ performance optimization techniques to deliver fast loading times and a seamless user experience. Continually seek to expand knowledge and stay abreast of emerging technologies within the Front-End Development landscape.",
-  );
+  const skills = ref("");
 
   function saveSkills(skills: string) {
     console.log("Skills: ", skills);
-    sessionStorage[ESessionStorage.RESUME_SKILLS] = JSON.stringify(skills);
+    localStorage[EStorage.RESUME_SKILLS] = JSON.stringify(skills);
   }
 
   function loadSkills(): void {
-    const res = getData<{ skills: string }>(ESessionStorage.RESUME_SKILLS);
+    const res = getData<{ skills: string }>(EStorage.RESUME_SKILLS);
+    if (!res) return;
     skills.value = res.skills;
   }
 
-  const experiences = ref<Array<TExperience>>([
-    {
-      id: crypto.randomUUID(),
-      employer: "ATDEV",
-      position: "Front-End Developer",
-      startDate: "",
-      endDate: "",
-      address: "Dominican Republic",
-      experience:
-        "Develop and maintain responsive user interfaces for various web applications using HTML, CSS, and JavaScript, including frameworks and libraries like Vue.js, Bootstrap, 11ty, and Element Plus. Improve website performance, resulting in faster load times and a smoother user experience. I achieve this by utilizing tools like image converters, page speed analyzers, and code minifiers. Implement accessibility best practices to ensure a positive user experience for all visitors. Work iteratively with UI/UX Designers utilizing Canva and GIMP for media editing. I collaborate closely with QA Engineers leveraging Cypress and Vitest to ensure a robust testing process throughout development. I also maintain open communication with Back-End Developers to guarantee a seamless integration and user experience. Utilize collaboration tools like Notion, Slack and Google Workspace to work effectively with the different teams in the company. I also rely on version control systems (Git) for code management and collaboration with the development team.",
-    },
-    {
-      id: crypto.randomUUID(),
-      employer: "ATDEV",
-      position: "Web Developer Intern",
-      startDate: "",
-      endDate: "",
-      address: "Dominican Republic",
-      experience:
-        "During my internship, I sought out mentorship from the UI/UX Designer and QA Engineer. Their guidance helped me develop the front-end skills necessary to contribute to the team and ultimately secure a full-time position at the company.",
-    },
-  ]);
+  const experiences = ref<Array<TExperience>>([]);
 
   const addExperience = () => {
     experiences.value.push({
@@ -95,8 +73,19 @@ export const useResumeStore = defineStore("resume", () => {
 
   function saveExperience(experience: TExperience) {
     console.log("Experience: ", experience);
-    sessionStorage[ESessionStorage.RESUME_EXPERIENCES] =
-      JSON.stringify(experience);
+    const experiences = getData<Array<TExperience>>(
+      EStorage.RESUME_EXPERIENCES,
+    );
+
+    localStorage[EStorage.RESUME_EXPERIENCES] = JSON.stringify(
+      experiences ? [...experiences, experience] : [experience],
+    );
+  }
+
+  function loadExperiences(): void {
+    const res = getData<Array<TExperience>>(EStorage.RESUME_EXPERIENCES);
+    if (!res) return;
+    experiences.value = res;
   }
 
   const educationList = ref<Array<TEducation>>([
@@ -156,12 +145,13 @@ export const useResumeStore = defineStore("resume", () => {
 
   function saveEducation(education: TEducation) {
     console.log("Education: ", education);
-    sessionStorage[ESessionStorage.RESUME_EDUCATION] =
-      JSON.stringify(education);
+    localStorage[EStorage.RESUME_EDUCATION] = JSON.stringify(education);
   }
 
-  function getData<T>(name: ESessionStorage): T {
-    const res = JSON.parse(sessionStorage[name]);
+  function getData<T>(name: EStorage): T | undefined {
+    const data = localStorage[name];
+    if (!data) return;
+    const res = JSON.parse(data);
     return res;
   }
 
@@ -176,6 +166,7 @@ export const useResumeStore = defineStore("resume", () => {
     addExperience,
     deleteExperience,
     saveExperience,
+    loadExperiences,
     educationList,
     addEducation,
     deleteEducation,

@@ -34,6 +34,7 @@ const handleSubmit = (e: Event, type: TFormHandler) => {
 onMounted(() => {
   resumeStore.loadIntroduction()
   resumeStore.loadSkills()
+  resumeStore.loadExperiences()
 })
 
 </script>
