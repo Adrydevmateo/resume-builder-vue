@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { addToStorage } from '@/utils/storage';
-import { SessionStorage } from '@/types'
+import { ESessionStorage } from '@/types'
 import { ref } from 'vue';
 
 type Resume = {
@@ -23,7 +23,7 @@ const resumes = ref<Array<Resume>>([
 ])
 
 const handlePickedResume = (id: string) => {
-  addToStorage('session', SessionStorage.CURRENT_RESUME_ID, id)
+  addToStorage('session', ESessionStorage.CURRENT_RESUME_ID, id)
 }
 </script>
 

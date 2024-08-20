@@ -5,7 +5,9 @@ import { useResumeStore } from '@/stores/resume.store';
 
 const resumeStore = useResumeStore()
 
-const handleSubmit = (e: Event) => {
+type TFormHandler = "introduction" | "skills" | "experience" | "education"
+
+const handleSubmit = (e: Event, type: TFormHandler) => {
   const form = e.target as HTMLFormElement
   const formData = new FormData(form)
   const honey = formData.get('_honey')
@@ -15,22 +17,22 @@ const handleSubmit = (e: Event) => {
   let collectedData: any = {}
 
   for (const field of formData) {
-    collectedData[field[0]] = field[1]
+    if (field[0] !== "_honey") collectedData[field[0]] = field[1]
   }
 
-  console.log(collectedData)
-}
+  if(type === "introduction") return resumeStore.saveIntroduction(collectedData)
+  
+  if(type === "skills") return resumeStore.saveSkills(collectedData)
 
-const resizeTextArea = (textarea: HTMLTextAreaElement) => {
-  textarea.style.height = 'auto'
-  textarea.style.height = textarea.scrollHeight + 'px'
+  if(type === "experience") return resumeStore.saveExperience(collectedData)
+  
+  if(type === "education") return resumeStore.saveEducation(collectedData)
+
+  throw new Error("Form type not specified")
 }
 
 onMounted(() => {
-  const listOfTextareas = document.querySelectorAll("textarea")
-  for (const textarea of listOfTextareas) {
-    if (textarea.value) resizeTextArea(textarea)
-  }
+  resumeStore.loadIntroduction()
 })
 
 </script>
@@ -39,7 +41,7 @@ onMounted(() => {
   <div class="builder">
     <!-- Introduction -->
     <CollapseComponent :id="1" title="Introduction" description="This is the introduction form">
-      <form @submit.prevent="handleSubmit">
+      <form @submit.prevent="(e: Event) => handleSubmit(e, 'introduction')">
         <input type="text" name="_honey" style="display: none;">
         <div class="form__content">
           <input type="text" name="name" placeholder="Name" minlength="3" autocomplete="off"
@@ -49,7 +51,7 @@ onMounted(() => {
           <input type="text" name="title" placeholder="Title - Ex: Software Developer" autocomplete="off"
             v-model="resumeStore.introduction.title" required>
           <input type="text" name="website" placeholder="Website" autocomplete="off"
-            v-model="resumeStore.introduction.website" required>
+            v-model="resumeStore.introduction.website">
           <input type="email" name="email" placeholder="Email" autocomplete="off"
             v-model="resumeStore.introduction.email" required>
           <input type="tel" name="phone" placeholder="Phone number" autocomplete="off"
@@ -70,12 +72,11 @@ onMounted(() => {
 
     <!-- Skills -->
     <CollapseComponent :id="2" title="Skills" description="Write about your skills">
-      <form @submit.prevent="handleSubmit">
+      <form @submit.prevent="(e: Event) => handleSubmit(e, 'skills')">
         <input type="text" name="_honey" style="display: none;">
         <div class="form__content">
           <textarea name="skills" placeholder="I possess a comprehensive skill-set in ..." minlength="3"
-            v-model="resumeStore.skills"
-            @input="({ target }) => resizeTextArea(target as HTMLTextAreaElement)"></textarea>
+            v-model="resumeStore.skills"></textarea>
         </div>
         <br>
         <div class="btn-wrapper">
@@ -90,7 +91,7 @@ onMounted(() => {
     <CollapseComponent :id="3" title="Experience" description="Add your experiences!">
       <div class="list-of-forms">
         <form class="experience-form" v-for="experience, index in resumeStore.experiences" :key="index"
-          @submit.prevent="handleSubmit">
+          @submit.prevent="(e: Event) => handleSubmit(e, 'experience')">
           <input type="text" name="_honey" style="display: none;">
           <input type="text" name="id" :value="experience.id" hidden>
           <div class="form__content">
@@ -101,8 +102,7 @@ onMounted(() => {
             <input type="date" name="startDate" v-model="experience.startDate">
             <input type="date" name="endDate" v-model="experience.endDate">
             <input type="text" name="address" placeholder="Address" autocomplete="off" v-model="experience.address">
-            <textarea name="experience" placeholder="My experience .." minlength="3" v-model="experience.experience"
-              @input="({ target }) => resizeTextArea(target as HTMLTextAreaElement)"></textarea>
+            <textarea name="experience" placeholder="My experience .." minlength="3" v-model="experience.experience"></textarea>
           </div>
           <br>
           <div class="btn-wrapper">
@@ -123,7 +123,7 @@ onMounted(() => {
     <!-- Education -->
     <CollapseComponent :id="4" title="Education" description="Show your achievements!">
       <div class="list-of-forms">
-        <form v-for="education, index in resumeStore.educationList" :key="index" @submit.prevent="handleSubmit">
+        <form v-for="education, index in resumeStore.educationList" :key="index" @submit.prevent="(e: Event) => handleSubmit(e, 'education')">
           <input type="text" name="_honey" style="display: none;">
           <input type="text" name="id" :value="education.id" hidden>
           <div class="form__content">
@@ -178,8 +178,8 @@ textarea {
 
 textarea {
   resize: none;
-  padding-top: 10px;
-  padding-bottom: 0;
+  padding-block: 10px;
+  min-height: 200px;
 }
 
 .btn-wrapper {
