@@ -25,9 +25,8 @@ export const useResumeStore = defineStore("resume", () => {
       JSON.stringify(introduction);
   }
 
-  function loadIntroduction(): TIntroduction {
+  function loadIntroduction(): void {
     const res = getData<TIntroduction>(ESessionStorage.RESUME_INTRODUCTION);
-    console.log("Response: ", res);
     introduction.name = res.name;
     introduction.lastName = res.lastName;
     introduction.title = res.title;
@@ -36,7 +35,6 @@ export const useResumeStore = defineStore("resume", () => {
     introduction.phone = res.phone;
     introduction.city = res.city;
     introduction.country = res.country;
-    return res;
   }
 
   const skills = ref(
@@ -46,6 +44,11 @@ export const useResumeStore = defineStore("resume", () => {
   function saveSkills(skills: string) {
     console.log("Skills: ", skills);
     sessionStorage[ESessionStorage.RESUME_SKILLS] = JSON.stringify(skills);
+  }
+
+  function loadSkills(): void {
+    const res = getData<{ skills: string }>(ESessionStorage.RESUME_SKILLS);
+    skills.value = res.skills;
   }
 
   const experiences = ref<Array<TExperience>>([
@@ -168,6 +171,7 @@ export const useResumeStore = defineStore("resume", () => {
     loadIntroduction,
     skills,
     saveSkills,
+    loadSkills,
     experiences,
     addExperience,
     deleteExperience,
