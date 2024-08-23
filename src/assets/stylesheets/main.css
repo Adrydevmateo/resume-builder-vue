@@ -47,7 +47,8 @@
 
   --font-family: "Inter", system-ui, sans-serif;
 
-  --transition-primary: 0.3s ease;
+  --transition-speed-primary: 0.3s;
+  --transition-primary: var(--transition-speed-primary) ease;
 }
 
 /* width */
@@ -114,6 +115,38 @@ svg {
 
 .section-title {
   font-size: var(--font-big);
+}
+
+.inline_block {
+  display: inline-block !important;
+}
+
+.inline_separator {
+  margin-inline: 4px;
+}
+
+h1,
+h2,
+h3,
+p,
+a,
+span,
+strong {
+  animation: bounce-in var(--transition-speed-primary);
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 @media (min-width: 450px) {

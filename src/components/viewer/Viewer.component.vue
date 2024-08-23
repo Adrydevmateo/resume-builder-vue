@@ -2,6 +2,8 @@
 import { useResumeStore } from '@/stores/resume.store';
 
 const resumeStore = useResumeStore()
+
+const introduction = resumeStore.introduction
 </script>
 
 <template>
@@ -9,36 +11,36 @@ const resumeStore = useResumeStore()
     <!-- Introduction -->
     <div class="viewer__section">
       <div class="col-1">
-        <strong class="username">
-          {{ resumeStore.introduction.name }}
+        <strong class="username" v-if="introduction.name">
+          {{ introduction.name }}
         </strong>
-        <strong class="username">
-          {{ resumeStore.introduction.lastName }}
+        <strong class="username" v-if="introduction.lastName">
+          {{ introduction.lastName }}
         </strong>
-        <strong class="user-title">{{ resumeStore.introduction.title }}</strong>
+        <strong class="user-title" v-if="introduction.title">{{ resumeStore.introduction.title }}</strong>
       </div>
       <div class="col-2">
-        <a :href="resumeStore.introduction.website" target="_blank">
+        <a :href="introduction.website" target="_blank" v-if="resumeStore.introduction.website">
           <strong>Portfolio Website</strong>
         </a>
-        <a :href="'mailto' + resumeStore.introduction.email">
-          <strong>{{ resumeStore.introduction.email }}</strong>
+        <a :href="'mailto' + introduction.email" v-if="resumeStore.introduction.email">
+          <strong>{{ introduction.email }}</strong>
         </a>
         <br>
-        <a class="muted" :href="'tel:' + resumeStore.introduction.phone">
-          <strong>{{ resumeStore.introduction.phone }}</strong>
+        <a class="muted" :href="'tel:' + introduction.phone" v-if="resumeStore.introduction.phone">
+          <strong>{{ introduction.phone }}</strong>
         </a>
-        <strong class="muted">{{ resumeStore.introduction.city }}</strong>
-        <strong class="muted">{{ resumeStore.introduction.country }}</strong>
+        <strong class="muted" v-if="introduction.city">{{ resumeStore.introduction.city }}</strong>
+        <strong class="muted" v-if="introduction.country">{{ resumeStore.introduction.country }}</strong>
       </div>
     </div>
 
     <!-- Skills -->
-    <div class="viewer__section">
+    <div class="viewer__section" v-if="resumeStore.skills">
       <div class="col-1">
         <strong>Skills</strong>
       </div>
-      <div class="col-2">
+      <div class="col-2" v-if="resumeStore.skills">
         <p>
           {{ resumeStore.skills }}
         </p>
@@ -46,16 +48,18 @@ const resumeStore = useResumeStore()
     </div>
 
     <!-- Experience -->
-    <div class="viewer__section">
+    <div class="viewer__section" v-if="resumeStore.experiences.length">
       <div class="col-1">
         <strong>Experience</strong>
       </div>
       <div class="col-2">
         <ol>
           <li v-for="experience, index in resumeStore.experiences" :key="index">
-            <strong>{{ experience.employer }}</strong> / <span>{{ experience.position }}</span>
-            <p class="item-address">{{ experience.address }}</p>
-            <p>
+              <strong class="inline_block" v-if="experience.employer">{{ experience.employer }}</strong>
+             <span class="inline_separator inline_block" v-if="experience.position">/</span> 
+<span class="inline_block" v-if="experience.position">{{ experience.position }}</span>
+            <p class="item-address" v-if="experience.address">{{ experience.address }}</p>
+            <p v-if="experience.experience">
               {{ experience.experience }}
             </p>
           </li>
@@ -64,15 +68,17 @@ const resumeStore = useResumeStore()
     </div>
 
     <!-- Education -->
-    <div class="viewer__section">
+    <div class="viewer__section" v-if="resumeStore.educationList.length">
       <div class="col-1">
         <strong>Education</strong>
       </div>
       <div class="col-2">
         <ol>
           <li v-for="education, index in resumeStore.educationList" :key="index">
-            <strong>{{ education.institution }}</strong> / <span>{{ education.education }}</span>
-            <p class="item-address">{{ education.location }}</p>
+            <strong class="inline_block" v-if="education.institution">{{ education.institution }}</strong>
+            <span class="inline_separator inline_block" v-if="education.education">/</span>
+            <span class="inline_block" v-if="education.education">{{ education.education }}</span>
+            <p class="item-address" v-if="education.location">{{ education.location }}</p>
           </li>
         </ol>
       </div>
