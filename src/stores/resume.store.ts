@@ -69,7 +69,26 @@ export const useResumeStore = defineStore("resume", () => {
     if (!experience) return;
     const index = experiences.value.indexOf(experience);
     experiences.value.splice(index, 1);
+
+    deleteExperienceFromStorage(experience.id);
   };
+
+  function deleteExperienceFromStorage(id: string) {
+    const experiences = getData<Array<TExperience>>(
+      EStorage.RESUME_EXPERIENCES,
+    );
+
+    if (!experiences) return;
+
+    const found = experiences.find((f) => f.id === id);
+    if (!found) return;
+
+    const positionOfFound = experiences.indexOf(found);
+    experiences.splice(positionOfFound, 1);
+    return (localStorage[EStorage.RESUME_EXPERIENCES] = JSON.stringify([
+      ...experiences,
+    ]));
+  }
 
   function saveExperience(experience: TExperience) {
     console.log("Experience: ", experience);
@@ -77,9 +96,24 @@ export const useResumeStore = defineStore("resume", () => {
       EStorage.RESUME_EXPERIENCES,
     );
 
-    localStorage[EStorage.RESUME_EXPERIENCES] = JSON.stringify(
-      experiences ? [...experiences, experience] : [experience],
-    );
+    if (!experiences)
+      return (localStorage[EStorage.RESUME_EXPERIENCES] = JSON.stringify([
+        experience,
+      ]));
+
+    const found = experiences.find((f) => f.id === experience.id);
+    if (found) {
+      const positionOfFound = experiences.indexOf(found);
+      experiences.splice(positionOfFound, 1, experience);
+      return (localStorage[EStorage.RESUME_EXPERIENCES] = JSON.stringify([
+        ...experiences,
+      ]));
+    }
+
+    return (localStorage[EStorage.RESUME_EXPERIENCES] = JSON.stringify([
+      ...experiences,
+      experience,
+    ]));
   }
 
   function loadExperiences(): void {
@@ -88,44 +122,7 @@ export const useResumeStore = defineStore("resume", () => {
     experiences.value = res;
   }
 
-  const educationList = ref<Array<TEducation>>([
-    {
-      id: crypto.randomUUID(),
-      institution: "Google",
-      education: "Build Dynamic User Interfaces (UI) for Websites",
-      location: "Coursera",
-    },
-    {
-      id: crypto.randomUUID(),
-      institution: "Google",
-      education: "Foundations of User Experience (UX) Design",
-      location: "Coursera",
-    },
-    {
-      id: crypto.randomUUID(),
-      institution: "Google",
-      education: "UX Design Process: Empathize, Define, and Ideate",
-      location: "Coursera",
-    },
-    {
-      id: crypto.randomUUID(),
-      institution: "ITLA",
-      education: "Associate's Degree in Software Development",
-      location: "Santo Domingo, Dominican Republic",
-    },
-    {
-      id: crypto.randomUUID(),
-      institution: "ITLA",
-      education: "English for IT Professionals",
-      location: "Santo Domingo, Dominican Republic",
-    },
-    {
-      id: crypto.randomUUID(),
-      institution: "ITLA",
-      education: "Computer Essentials",
-      location: "Santo Domingo, Dominican Republic",
-    },
-  ]);
+  const educationList = ref<Array<TEducation>>([]);
 
   const addEducation = () => {
     educationList.value.push({
@@ -141,11 +138,53 @@ export const useResumeStore = defineStore("resume", () => {
     if (!education) return;
     const index = educationList.value.indexOf(education);
     educationList.value.splice(index, 1);
+
+    deleteEducationFromStorage(education.id);
   };
+
+  function deleteEducationFromStorage(id: string) {
+    const educationList = getData<Array<TEducation>>(EStorage.RESUME_EDUCATION);
+
+    if (!educationList) return;
+
+    const found = educationList.find((f) => f.id === id);
+    if (!found) return;
+
+    const positionOfFound = educationList.indexOf(found);
+    educationList.splice(positionOfFound, 1);
+    return (localStorage[EStorage.RESUME_EDUCATION] = JSON.stringify([
+      ...educationList,
+    ]));
+  }
 
   function saveEducation(education: TEducation) {
     console.log("Education: ", education);
-    localStorage[EStorage.RESUME_EDUCATION] = JSON.stringify(education);
+    const educationList = getData<Array<TEducation>>(EStorage.RESUME_EDUCATION);
+
+    if (!educationList)
+      return (localStorage[EStorage.RESUME_EDUCATION] = JSON.stringify([
+        education,
+      ]));
+
+    const found = educationList.find((f) => f.id === education.id);
+    if (found) {
+      const positionOfFound = educationList.indexOf(found);
+      educationList.splice(positionOfFound, 1, education);
+      return (localStorage[EStorage.RESUME_EDUCATION] = JSON.stringify([
+        ...educationList,
+      ]));
+    }
+
+    return (localStorage[EStorage.RESUME_EDUCATION] = JSON.stringify([
+      ...educationList,
+      education,
+    ]));
+  }
+
+  function loadEducation(): void {
+    const res = getData<Array<TEducation>>(EStorage.RESUME_EDUCATION);
+    if (!res) return;
+    educationList.value = res;
   }
 
   function getData<T>(name: EStorage): T | undefined {
@@ -171,5 +210,6 @@ export const useResumeStore = defineStore("resume", () => {
     addEducation,
     deleteEducation,
     saveEducation,
+    loadEducation,
   };
 });

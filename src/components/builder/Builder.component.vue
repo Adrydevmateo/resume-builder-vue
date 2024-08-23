@@ -35,6 +35,7 @@ onMounted(() => {
   resumeStore.loadIntroduction()
   resumeStore.loadSkills()
   resumeStore.loadExperiences()
+  resumeStore.loadEducation()
 })
 
 </script>
